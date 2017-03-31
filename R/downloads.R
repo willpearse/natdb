@@ -47,20 +47,6 @@
   return(.df.melt(data, "species", units=units))
 }
 
-# .klomp.2016 <- function(...){
-#   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
-#   names(data) <- tolower(gsub("\\.", "_", names(data)))
-#
-#   colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area_', sexual_dimorphism_in_dewlap_area__natural_logged_ sexual_size_dimorphism__svl_ sexual_dichromatism__chromatic_contrast_
-#   data <- data[,-c(1:4,16)]
-#   colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
-#   data$species <- 'anolis_sagrei'
-#   units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,4))
-#   data <- .df.melt(data, "species", units=units)
-#   data$character$units <- NA
-#   return(data)
-# }
-
 .wright.2004 <- function(...){
     raw <- read.xls("http://www.nature.com/nature/journal/v428/n6985/extref/nature02403-s2.xls", as.is=TRUE, skip=7)
     metadata <- data.frame(raw[,c("Code","Dataset","BIOME")],need_permission=TRUE)
@@ -187,7 +173,9 @@
 .kolbe.2011 <- function(...){
   data <- read.table(ft_get_si("10.5061/dryad.1d24c","21%20species%20means.txt"),header=T,sep = '\t')
   units <- c(rep('mm',20))
-  data<-.df.melt(data, "Species", units=units)
+  colnames(data) <- c('species', 'ecomorph', 'snout_vent_length', 'head_length', 'head_width' 'head_height', 'pectoral_width','pelvis_width', 'lamellae_3rd_foretoe','lamellae_4th_hindtoe', 'humerus_length', 'ulna_length')
+  data$species <- gsub('A. ','anolis_', data$species)
+  data<-.df.melt(data, "species", units=units)
   data$character$units <- NA
   return(data)
   }
@@ -330,6 +318,8 @@
   download.file("https://datadryad.org/bitstream/handle/10255/dryad.47130/Ontogenetic%20allometry%20data.csv?sequence=1",file)
   data<-read.csv(file)
   data<-data[,-c(2:3,5)]
+  colnames(data) <- c('species','snout_vent_length','face_length','body_length')
+  data$species <- gsub('A. ','anolis_',data$species)
   units <- c("mm","cm","cm")
   data<-.df.melt(data,"Species",units=units)
 }
@@ -432,12 +422,13 @@
   return(.df.melt(data, "species", units, metadata))
 }
 
-  ## WIP
+  ## Spencer needs to fix metadata
 .winchell.2016 <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
   data <- data[,-c(1:2,15:16)]
-  data$species <- 'A.cristatellus'
+  data$species <- 'anolis_cristatellus'
   data$perch.diam.cm <- as.numeric(data$perch.diam.cm)
+  # metadata <- data[,c("site","context","perch")]
   units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
   return(.df.melt(data, "species", units=units))
 }
@@ -514,6 +505,13 @@
   data$species <- tolower(gsub(" ", "_", (data$species)))
   data$species <- gsub("\\(", "", (data$species))
   data$species <- gsub("\\)", "", (data$species))
+  data$species <- gsub("_population", "", (data$species))
+  data$species <- gsub("_gombak", "", (data$species))
+  data$species <- gsub("_niah", "", (data$species))
+  data$species <- gsub("_borneo", "", (data$species))
+  data$species <- gsub("_mainland", "", (data$species))
+  data$species <- gsub("_bako", "", (data$species))
+  data$species <- paste0('draco_',data$species)
   units <- c(rep('cm^2',2), 'cm^2 (nl)', 'cm', rep('JND', 6), 'nl', NA)
   data <- .df.melt(data, "species", units=units)
   return(data)
