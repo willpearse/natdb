@@ -1433,3 +1433,19 @@ return(to_return_data)
   return(our_final_data)
 }
 
+#'@export
+.ord.2015b <- function(...){
+  downl_data <- read.delim(
+    suppdata(
+      x = "10.5061/dryad.f01t1",
+      si = "ORD_TJ-JEB-2015-00382R1_hyoid_data.txt")
+    ,as.is=TRUE) #Read file from internet
+  our_data <- downl_data[, c(1:3)] #Our data object
+  colnames(our_data) <- c("species", "fulcrum_ratio_of_hyoid", "hypohyal_angle_to_ceratobranchial") #Column names for our data
+  our_units <- c("", "degrees") #Units for our data
+  our_final_data <- .df.melt(
+    x = our_data,
+    spp = "species",
+    units = our_units)
+  return(our_final_data)
+}
